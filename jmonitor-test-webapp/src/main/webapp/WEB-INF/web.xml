@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<web-app xmlns="http://java.sun.com/xml/ns/j2ee" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+   xsi:schemaLocation="http://java.sun.com/xml/ns/j2ee http://java.sun.com/xml/ns/j2ee/web-app_2_5.xsd" version="2.5">
+
+   <display-name>jmonitor-test-webapp</display-name>
+
+   <filter>
+      <filter-name>jmonitor</filter-name>
+      <filter-class>org.jmonitor.ui.server.MonitorUiFilter</filter-class>
+   </filter>
+   <filter-mapping>
+      <filter-name>jmonitor</filter-name>
+      <url-pattern>/jmonitor/*</url-pattern>
+   </filter-mapping>
+
+   <servlet>
+      <servlet-name>pauseServlet</servlet-name>
+      <servlet-class>org.jmonitor.test.webapp.PauseServlet</servlet-class>
+   </servlet>
+   <servlet>
+      <servlet-name>sessionServlet</servlet-name>
+      <servlet-class>org.jmonitor.test.webapp.SessionServlet</servlet-class>
+   </servlet>
+
+   <servlet-mapping>
+      <servlet-name>pauseServlet</servlet-name>
+      <url-pattern>/pauseServlet</url-pattern>
+   </servlet-mapping>
+   <servlet-mapping>
+      <servlet-name>sessionServlet</servlet-name>
+      <url-pattern>/sessionServlet</url-pattern>
+   </servlet-mapping>
+
+</web-app>

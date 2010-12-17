@@ -1,0 +1,12 @@
+<FindBugsFilter>
+  <Match>
+    <!--
+      * UWF_FIELD_NOT_INITIALIZED_IN_CONSTRUCTOR is excluded because it seems unnecessary
+        to explicitly initialize null values
+        
+      * SIC_INNER_SHOULD_BE_STATIC_ANON is excluded because it is often so much more 
+        convenient to use anonymous classes than to use static nested classes
+    -->
+    <Bug pattern="UWF_FIELD_NOT_INITIALIZED_IN_CONSTRUCTOR,SIC_INNER_SHOULD_BE_STATIC_ANON" />
+  </Match>
+</FindBugsFilter>

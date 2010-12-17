@@ -1,0 +1,10 @@
+
+pom.xml formatting convention is followed from maven.apache.org:
+http://maven.apache.org/developers/conventions/code.html#POM_Code_Convention
+http://maven.apache.org/developers/conventions/code.html#XML
+
+order dependencies by scope (compile, provided, runtime, test), alphabetically within the same scope
+but org.jmonitor artifacts always first within their respective scope
+
+order properties alphabetically
+

@@ -1,0 +1,49 @@
+Index: pom.xml
+===================================================================
+--- pom.xml	(revision 2531)
++++ pom.xml	(working copy)
+@@ -2,7 +2,7 @@
+   <modelVersion>4.0.0</modelVersion>
+   <groupId>checkstyle</groupId>
+   <artifactId>checkstyle</artifactId>
+-  <version>5.1</version>
++  <version>5.1.1-INTERNAL-1</version>
+   <packaging>jar</packaging>
+   <name>Checkstyle</name>
+   <url>http://checkstyle.sourceforge.net/</url>
+Index: src/checkstyle/com/puppycrawl/tools/checkstyle/checks/javadoc/JavadocTypeCheck.java
+===================================================================
+--- src/checkstyle/com/puppycrawl/tools/checkstyle/checks/javadoc/JavadocTypeCheck.java	(revision 2531)
++++ src/checkstyle/com/puppycrawl/tools/checkstyle/checks/javadoc/JavadocTypeCheck.java	(working copy)
+@@ -64,6 +64,8 @@
+     private boolean mAllowMissingParamTags;
+     /** controls whether to flag errors for unknown tags. Defaults to false. */
+     private boolean mAllowUnknownTags;
++    
++    private boolean mIgnoreNestedTypes;
+ 
+     /**
+      * Sets the scope to check.
+@@ -138,6 +140,11 @@
+         mAllowUnknownTags = aFlag;
+     }
+ 
++    public void setIgnoreNestedTypes(boolean aFlag)
++    {
++        mIgnoreNestedTypes = aFlag;
++    }
++    
+     @Override
+     public int[] getDefaultTokens()
+     {
+@@ -190,6 +197,10 @@
+      */
+     private boolean shouldCheck(final DetailAST aAST)
+     {
++        if (mIgnoreNestedTypes && aAST.getParent() != null && aAST.getParent().getType() != TokenTypes.EOF) {
++            return false;
++        }
++        
+         final DetailAST mods = aAST.findFirstToken(TokenTypes.MODIFIERS);
+         final Scope declaredScope = ScopeUtils.getScopeFromMods(mods);
+         final Scope scope =

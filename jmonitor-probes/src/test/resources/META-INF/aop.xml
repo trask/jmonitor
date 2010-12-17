@@ -1,0 +1,23 @@
+<!--
+  this allows the tests to be run using load-time weaving which is particularly useful for debugging tests via
+  Eclipse (just add
+  -javaagent:"${system_property:user.home}\.m2\repository\org\aspectj\aspectjweaver\1.6.10\aspectjweaver-1.6.10.jar"
+  to the run configuration VM arguments)
+-->
+<aspectj>
+
+  <aspects>
+    <aspect name="org.jmonitor.test.configuration.ConfigurationAspect" />
+    <aspect name="org.jmonitor.test.configuration.ServletProbeConfigurationAspect" />
+    <aspect name="org.jmonitor.mock.MockProbe" />
+    <!-- TODO break out these into aop.xml (with hidden/shaded name) in runtime jar for LTW -->
+    <aspect name="org.jmonitor.extension.probe.JdbcProbe" />
+    <aspect name="org.jmonitor.extension.probe.ServletProbe" />
+  </aspects>
+
+  <weaver options="-Xlint:ignore">
+    <!-- microsoft jdbc driver jar is signed so it must be excluded -->
+    <exclude within="com.microsoft..*" />
+  </weaver>
+
+</aspectj>

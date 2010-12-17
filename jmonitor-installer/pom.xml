@@ -1,0 +1,282 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!--
+  Copyright 2010 the original author or authors.
+
+  Licensed under the Apache License, Version 2.0 (the "License");
+  you may not use this file except in compliance with the License.
+  You may obtain a copy of the License at
+
+       http://www.apache.org/licenses/LICENSE-2.0
+
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License.
+-->
+
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+
+  <parent>
+    <groupId>org.jmonitor</groupId>
+    <artifactId>jmonitor-parent</artifactId>
+    <version>1.0-SNAPSHOT</version>
+  </parent>
+
+  <artifactId>jmonitor-installer</artifactId>
+  <name>JMonitor Installer</name>
+  <description>The installer which weaves JMonitor into Java EE ear and war files</description>
+
+  <dependencies>
+    <dependency>
+      <!-- updating to latest version of asm (used by maven-shade-plugin below) -->
+      <groupId>asm</groupId>
+      <artifactId>asm</artifactId>
+      <version>3.3</version>
+    </dependency>
+    <dependency>
+      <!-- updating to latest version of asm (used by maven-shade-plugin below) -->
+      <groupId>asm</groupId>
+      <artifactId>asm-commons</artifactId>
+      <version>3.3</version>
+    </dependency>
+    <dependency>
+      <groupId>ch.qos.logback</groupId>
+      <artifactId>logback-core</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>ch.qos.logback</groupId>
+      <artifactId>logback-classic</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>commons-io</groupId>
+      <artifactId>commons-io</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>commons-lang</groupId>
+      <artifactId>commons-lang</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>net.sf.jopt-simple</groupId>
+      <artifactId>jopt-simple</artifactId>
+      <version>3.2</version>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.maven.plugins</groupId>
+      <artifactId>maven-shade-plugin</artifactId>
+      <!-- patched to help shade aspectj -->
+      <version>1.3.2-INTERNAL-rtag1.3.1</version>
+    </dependency>
+    <dependency>
+      <groupId>org.slf4j</groupId>
+      <artifactId>slf4j-api</artifactId>
+    </dependency>
+    <dependency>
+      <!--
+        we need the dependency here so that we can use the dependency plugin's copy-dependencies
+        goal below to copy this into this project's resources directory so it is available at
+        runtime. if it were not part of the same multi-module build (jmonitor) then we could use
+        the dependency plugin's copy goal (instead of copy-dependencies) and we wouldn't need to add
+        this as a dependency (e.g. see how javax:javaee-api is handled in org.jmonitor:jmonitor-installer-base)
+      -->
+      <groupId>org.jmonitor</groupId>
+      <artifactId>jmonitor-installer-base</artifactId>
+      <version>${project.version}</version>
+      <!--
+        technically this is not even a provided dependency as this implies that the dependency will
+        be on the installer's classpath at runtime, but really we are just bundling the dependency
+        into the installer as a resource so it can be read via ClassLoader.getResourceAsStream()
+      -->
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <!--
+        we need the dependency here so that we can use the dependency plugin's copy-dependencies
+        goal below to copy this into this project's resources directory so it is available at
+        runtime. if it were not part of the same multi-module build (jmonitor) then we could use
+        the dependency plugin's copy goal (instead of copy-dependencies) and we wouldn't need to add
+        this as a dependency (e.g. see how javax:javaee-api is handled in org.jmonitor:jmonitor-installer-base)
+      -->
+      <groupId>org.jmonitor</groupId>
+      <artifactId>jmonitor-runtime</artifactId>
+      <version>${project.version}</version>
+      <!--
+        technically this is not even a provided dependency as this implies that the dependency will
+        be on the installer's classpath at runtime, but really we are just bundling the dependency
+        into the installer as a resource so it can be read via ClassLoader.getResourceAsStream()
+      -->
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <!--
+        we need the dependency here so that we can use the dependency plugin's copy-dependencies
+        goal below to copy this into this project's resources directory so it is available at
+        runtime. if it were not part of the same multi-module build (jmonitor) then we could use
+        the dependency plugin's copy goal (instead of copy-dependencies) and we wouldn't need to add
+        this as a dependency (e.g. see how javax:javaee-api is handled in org.jmonitor:jmonitor-installer-base)
+      -->
+      <groupId>org.jmonitor</groupId>
+      <artifactId>jmonitor-probes</artifactId>
+      <version>${project.version}</version>
+      <!--
+        technically this is not even a provided dependency as this implies that the dependency will
+        be on the installer's classpath at runtime, but really we are just bundling the dependency
+        into the installer as a resource so it can be read via ClassLoader.getResourceAsStream()
+      -->
+      <scope>provided</scope>
+    </dependency>
+  </dependencies>
+
+  <build>
+    <plugins>
+      <plugin>
+        <artifactId>maven-dependency-plugin</artifactId>
+        <version>2.1</version>
+        <executions>
+          <execution>
+            <id>copy-jmonitor-artifacts</id>
+            <!--
+              this has to be bound to the package phase, which is when the jmonitor-runtime and
+              jmonitor-probes jar artifacts are available (at least when run from parent without
+              running mvn install first)
+            -->
+            <phase>package</phase>
+            <goals>
+              <goal>copy-dependencies</goal>
+            </goals>
+            <configuration>
+              <outputDirectory>${project.build.directory}/generated/resources</outputDirectory>
+              <!--
+                we strip the version since we need to know the exact jar file names inside InstallerMain
+                in order to read them via ClassLoader.getResourceAsStream()
+              -->
+              <stripVersion>true</stripVersion>
+              <includeGroupIds>org.jmonitor</includeGroupIds>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
+        <!--
+          adds ${project.build.directory}/generated/resources as a resource directory which contains
+          the artifacts copied above
+        -->
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>build-helper-maven-plugin</artifactId>
+        <configuration>
+          <resources>
+            <resource>
+              <directory>${project.build.directory}/generated/resources</directory>
+            </resource>
+          </resources>
+        </configuration>
+        <executions>
+          <execution>
+            <phase>generate-resources</phase>
+            <goals>
+              <goal>add-resource</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
+        <!--
+          this is bound to the package phase to pick up the jmonitor-runtime resource that was
+          added by maven-dependency-plugin:copy-dependencies (above). resources:resources still also
+          runs earlier during the standard maven process-resources phase.
+        -->
+        <artifactId>maven-resources-plugin</artifactId>
+        <executions>
+          <execution>
+            <phase>package</phase>
+            <goals>
+              <goal>resources</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
+        <!--
+          jar:jar is already bound to the maven package phase by default, but we need to add it
+          explicitly here to make it run after maven-resources-plugin:resources (above). jar:jar
+          still runs earlier in the package phase as well (but doesn't pick up the
+          jmonitor-runtime jar at that point).
+        -->
+        <artifactId>maven-jar-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>default-jar</id>
+            <phase>package</phase>
+            <goals>
+              <goal>jar</goal>
+            </goals>
+            <configuration>
+              <!--
+                at least one time this second jar execution fired but didn't jar (maybe because it
+                thought the jar file was up to date?) TODO I'm not sure if this will prevent this
+                from happening, need to review maven-jar-plugin implementation
+              -->
+              <forceCreation>true</forceCreation>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
+        <!--
+          TODO can simplify by using jar or assembly plugin now
+        -->
+        <artifactId>maven-shade-plugin</artifactId>
+        <version>1.3.1</version>
+        <executions>
+          <execution>
+            <phase>package</phase>
+            <goals>
+              <goal>shade</goal>
+            </goals>
+            <configuration>
+              <createSourcesJar>true</createSourcesJar>
+              <transformers>
+                <transformer implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
+                  <mainClass>org.jmonitor.installer.InstallerMain</mainClass>
+                </transformer>
+              </transformers>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+    </plugins>
+  </build>
+
+  <reporting>
+    <plugins>
+      <plugin>
+        <!-- overriding behavior inherited from jmonitor-parent -->
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>findbugs-maven-plugin</artifactId>
+        <configuration>
+          <excludeFilterFile>${basedir}/src/main/config/jmonitor-findbugs-exclude.xml</excludeFilterFile>
+          <!--
+            this is needed because jmonitor-installer has jar files (as resources) inside the
+            classes dir and FindBugs scans nested jar files by default (see
+            http://findbugs.sourceforge.net/manual/running.html#commandLineOptions)
+          -->
+          <classFilesDirectory>${project.build.outputDirectory}/org</classFilesDirectory>
+        </configuration>
+      </plugin>
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>jdepend-maven-plugin</artifactId>
+        <configuration>
+          <!--
+            this is needed because jmonitor-installer has jar files (as resources) inside the
+            classes dir and JDepends scans nested jar files (similar to FindBugs above)
+          -->
+          <classDirectory>${project.build.outputDirectory}/org</classDirectory>
+        </configuration>
+      </plugin>
+    </plugins>
+  </reporting>
+</project>

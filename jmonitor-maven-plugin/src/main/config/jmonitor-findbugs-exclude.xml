@@ -1,0 +1,18 @@
+<FindBugsFilter>
+  <Match>
+    <!--
+      explicit GC is used as a last ditch effort to rename a file in case there is an unreferenced
+      open stream preventing the file from being deleted
+    -->
+    <Class name="org.jmonitor.mojo.InstallMojo" />
+    <Method name="replaceFile" />
+    <Bug pattern="DM_GC" />
+  </Match>
+  <Match>
+    <!--
+      these are the standard exclusions, for more details see
+      jmonitor-build-tools/src/main/resources/jmonitor-findbugs-exclude.xml
+    -->
+    <Bug pattern="UWF_FIELD_NOT_INITIALIZED_IN_CONSTRUCTOR,SIC_INNER_SHOULD_BE_STATIC_ANON" />
+  </Match>
+</FindBugsFilter>

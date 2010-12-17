@@ -1,0 +1,16 @@
+<!--
+  this allows the application to be run using load-time weaving which is particularly useful for testing via Eclipse,
+  (just add
+  -javaagent:"${system_property:user.home}\.m2\repository\org\aspectj\aspectjweaver\1.6.10\aspectjweaver-1.6.10.jar"
+  to the run configuration VM arguments)
+-->
+<aspectj>
+
+  <aspects>
+    <aspect name="org.jmonitor.extension.probe.JdbcProbe" />
+    <aspect name="org.jmonitor.extension.probe.ServletProbe" />
+  </aspects>
+
+  <weaver options="-Xlint:ignore" />
+
+</aspectj>

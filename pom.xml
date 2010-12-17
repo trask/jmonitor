@@ -1,0 +1,596 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!--
+  Copyright 2010 the original author or authors.
+
+  Licensed under the Apache License, Version 2.0 (the "License");
+  you may not use this file except in compliance with the License.
+  You may obtain a copy of the License at
+
+       http://www.apache.org/licenses/LICENSE-2.0
+
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License.
+-->
+
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  
+  <groupId>org.jmonitor</groupId>
+  <artifactId>jmonitor-parent</artifactId>
+  <version>1.0-SNAPSHOT</version>
+  <packaging>pom</packaging>
+  
+  <name>JMonitor Parent</name>
+  <description>JMonitor Parent Project</description>
+  <url>http://www.jmonitor.org</url>
+  <inceptionYear>2010</inceptionYear>
+  <licenses>
+    <license>
+      <name>The Apache Software License, Version 2.0</name>
+      <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+      <distribution>repo</distribution>
+    </license>
+  </licenses>
+
+  <developers>
+    <developer>
+      <id>trask</id>
+      <name>Trask Stalnaker</name>
+      <email>trask.stalnaker@gmail.com</email>
+      <roles>
+        <role>developer</role>
+      </roles>
+      <timezone>-8</timezone>
+    </developer>
+  </developers>
+
+  <prerequisites>
+    <maven>2.1.0</maven>
+  </prerequisites>
+
+  <!--
+    care was taken to ensure that standard mvn commands work on this multi-module project, e.g.
+
+      * mvn clean test
+    
+      * mvn clean process-classes
+        (process-classes triggers GWT compilation)
+      
+      * mvn clean package
+      
+      * mvn clean compile eclipse:clean eclipse:eclipse
+
+        minimal command to generate eclipse projects
+        (compile is required otherwise modules cannot find each other without local install first,
+         see http://jira.codehaus.org/browse/MNG-3283)
+      
+      * mvn clean package eclipse:clean eclipse:eclipse
+        (this is needed in order to build the jmonitor-runtime package and add it to the jmonitor-installer
+         resources directory in case you want to run and debug the installer from inside eclipse)
+  -->
+
+  <modules>
+    <module>jmonitor-build-tools</module>
+    <module>jmonitor-api</module>
+    <module>jmonitor-runtime</module>
+    <module>jmonitor-probes</module>
+    <module>jmonitor-metrics</module>
+    <module>jmonitor-installer-base</module>
+    <module>jmonitor-installer</module>
+    <module>jmonitor-test-webapp</module>
+    <module>jmonitor-maven-plugin</module>
+  </modules>
+
+  <scm>
+    <connection>scm:git:git@github.com:jmonitor/jmonitor.git</connection>
+    <url>scm:git:git@github.com:jmonitor/jmonitor.git</url>
+    <developerConnection>scm:git:git@github.com:jmonitor/jmonitor.git</developerConnection>
+  </scm>
+  <distributionManagement>
+    <!-- TODO update to oss.sonatype.org, see https://docs.sonatype.com/display/NX/OSS+Repository+Hosting -->
+    <snapshotRepository>
+      <id>mitratech-snapshot-repo-dist</id>
+      <name>Mitratech Snapshot Repository</name>
+      <url>ftp://mavenrepo.mitratech.com/snapshot-repo</url>
+    </snapshotRepository>
+  </distributionManagement>
+
+  <properties>
+    <aspectj.version>1.6.11-DEV-20101214</aspectj.version>
+    <!--
+      we still have to use an older version of aspectjtools for compiling until some issues are resolved around the latest
+	  aspectjtools (see https://bugs.eclipse.org/bugs/show_bug.cgi?id=332388)
+
+      this patched build of aspectjtools weaves jmonitor probes around 5x faster which can make a big difference on
+      large projects
+    -->
+    <aspectjtools.version>1.6.11-DEV-20101214</aspectjtools.version>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+  </properties>
+
+  <!--
+    only add dependencies to dependencyManagement section which are shared across two or more modules (see
+    http://www.sonatype.com/books/mvnex-book/reference/optimizing-sect-dependencies.html), only include scope if all
+    modules use the artifact with the that scope and even then we still list the scope duplicatively in the module for
+    clarity
+  -->
+  <dependencyManagement>
+    <dependencies>
+      <dependency>
+        <groupId>ch.qos.logback</groupId>
+        <artifactId>logback-core</artifactId>
+        <version>0.9.26</version>
+      </dependency>
+      <dependency>
+        <groupId>ch.qos.logback</groupId>
+        <artifactId>logback-classic</artifactId>
+        <version>0.9.26</version>
+      </dependency>
+      <dependency>
+        <groupId>com.google.guava</groupId>
+        <artifactId>guava</artifactId>
+        <version>r07</version>
+      </dependency>
+      <dependency>
+        <groupId>commons-io</groupId>
+        <artifactId>commons-io</artifactId>
+        <version>2.0</version>
+      </dependency>
+      <dependency>
+        <groupId>commons-lang</groupId>
+        <artifactId>commons-lang</artifactId>
+        <version>2.5</version>
+      </dependency>
+      <dependency>
+        <groupId>org.aspectj</groupId>
+        <artifactId>aspectjrt</artifactId>
+        <version>${aspectj.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.slf4j</groupId>
+        <artifactId>slf4j-api</artifactId>
+        <version>1.6.1</version>
+      </dependency>
+      <dependency>
+        <groupId>javax.servlet</groupId>
+        <artifactId>servlet-api</artifactId>
+        <version>2.4</version>
+        <scope>provided</scope>
+      </dependency>
+      <dependency>
+        <groupId>junit</groupId>
+        <artifactId>junit</artifactId>
+        <version>4.8.2</version>
+        <scope>test</scope>
+      </dependency>
+    </dependencies>
+  </dependencyManagement>
+  
+  <repositories>
+    <repository>
+	  <!-- this is needed currently to get the latest aspectj artifacts -->
+      <id>maven.springframework.org</id>
+      <name>SpringSource releases</name>
+      <url>http://maven.springframework.org/release</url>
+    </repository>
+    <repository>
+	  <!-- this is needed to get the com.pietschy:gwt-pectin artifact -->
+	  <id>maven.pietschy.com</id>
+	  <name>Andrew Pietsch's Maven Repository</name>
+	  <url>http://maven.pietschy.com/repository</url>
+	</repository>
+  </repositories>
+
+  <build>
+    <extensions>
+      <extension>
+        <groupId>org.apache.maven.wagon</groupId>
+        <artifactId>wagon-ftp</artifactId>
+        <version>1.0-beta-2</version>
+      </extension>
+    </extensions>
+    <pluginManagement>
+      <plugins>
+        <!--
+          override versions of plugins included in maven super pom (based on report from versions-maven-plugin)
+        -->
+        <plugin>
+          <artifactId>maven-antrun-plugin</artifactId>
+          <version>1.3</version>
+        </plugin>
+        <plugin>
+          <artifactId>maven-assembly-plugin</artifactId>
+          <version>2.2-beta-5</version>
+        </plugin>
+        <plugin>
+          <artifactId>maven-clean-plugin</artifactId>
+          <version>2.4.1</version>
+        </plugin>
+        <plugin>
+          <artifactId>maven-compiler-plugin</artifactId>
+          <version>2.3.2</version>
+          <configuration>
+            <source>1.5</source>
+            <target>1.5</target>
+          </configuration>
+        </plugin>
+        <plugin>
+          <artifactId>maven-dependency-plugin</artifactId>
+          <version>2.1</version>
+        </plugin>
+        <plugin>
+          <artifactId>maven-deploy-plugin</artifactId>
+          <version>2.5</version>
+        </plugin>
+        <plugin>
+          <artifactId>maven-ear-plugin</artifactId>
+          <version>2.4.2</version>
+        </plugin>
+        <plugin>
+          <artifactId>maven-ejb-plugin</artifactId>
+          <version>2.2.1</version>
+        </plugin>
+        <plugin>
+          <artifactId>maven-install-plugin</artifactId>
+          <version>2.3.1</version>
+        </plugin>
+        <plugin>
+          <artifactId>maven-jar-plugin</artifactId>
+          <version>2.3.1</version>
+          <configuration>
+            <archive>
+              <manifest>
+                <addDefaultImplementationEntries>true</addDefaultImplementationEntries>
+              </manifest>
+            </archive>
+          </configuration>
+        </plugin>
+        <plugin>
+          <artifactId>maven-javadoc-plugin</artifactId>
+          <version>2.7</version>
+        </plugin>
+        <plugin>
+          <artifactId>maven-plugin-plugin</artifactId>
+          <version>2.6</version>
+        </plugin>
+        <plugin>
+          <artifactId>maven-rar-plugin</artifactId>
+          <version>2.2</version>
+        </plugin>
+        <plugin>
+          <artifactId>maven-release-plugin</artifactId>
+          <version>2.0</version>
+        </plugin>
+        <plugin>
+          <artifactId>maven-resources-plugin</artifactId>
+          <version>2.4.3</version>
+        </plugin>
+        <plugin>
+          <artifactId>maven-scm-plugin</artifactId>
+          <version>1.3</version>
+        </plugin>
+        <plugin>
+          <artifactId>maven-site-plugin</artifactId>
+          <version>2.2</version>
+        </plugin>
+        <plugin>
+          <artifactId>maven-source-plugin</artifactId>
+          <version>2.1.1</version>
+          <executions>
+            <execution>
+              <id>attach-sources</id>
+              <goals>
+                <goal>jar</goal>
+              </goals>
+            </execution>
+          </executions>
+        </plugin>
+        <plugin>
+          <artifactId>maven-surefire-plugin</artifactId>
+          <version>2.5</version>
+        </plugin>
+        <plugin>
+          <artifactId>maven-war-plugin</artifactId>
+          <version>2.1-beta-1</version>
+		  <configuration>
+		    <!-- this is needed to work around http://jira.codehaus.org/browse/MWAR-187 -->
+            <useCache>false</useCache>
+          </configuration>
+        </plugin>
+        <plugin>
+          <!--
+            adds ${project.build.directory}/generated/resources as a resource directory which contains the artifacts
+            copied above
+          -->
+          <groupId>org.codehaus.mojo</groupId>
+          <artifactId>build-helper-maven-plugin</artifactId>
+          <version>1.5</version>
+        </plugin>
+        <plugin>
+          <!--
+            for anyone using this plugin to generate eclipse project files version 2.7 of this plugin doesn't work with
+            this project (see http://jira.codehaus.org/browse/MECLIPSE-558) so it seems worth including this to force
+            the plugin version
+          -->
+          <artifactId>maven-eclipse-plugin</artifactId>
+          <version>2.8</version>
+          <configuration>
+            <ajdtVersion>${aspectj.version}</ajdtVersion>
+          </configuration>
+        </plugin>
+        <plugin>
+          <groupId>org.codehaus.mojo</groupId>
+          <artifactId>aspectj-maven-plugin</artifactId>
+          <version>1.3</version>
+          <configuration>
+            <Xlint>ignore</Xlint>
+            <source>1.5</source>
+            <target>1.5</target>
+            <!--
+              default location ends up under target/classes and then in artifact jar file. so we change this to write
+              the builddef.lst file to the target directory so it won't end up in artifact jar file.
+            -->
+            <argumentFileName>../builddef.lst</argumentFileName>
+          </configuration>
+          <dependencies>
+            <dependency>
+              <groupId>org.aspectj</groupId>
+              <artifactId>aspectjtools</artifactId>
+              <version>${aspectj.version}</version>
+            </dependency>
+          </dependencies>
+        </plugin>
+      </plugins>
+    </pluginManagement>
+    <plugins>
+      <plugin>
+        <!--
+          checkstyle configuration defined in reporting section takes precedence, see
+          http://maven.apache.org/guides/mini/guide-configuring-plugins.html#Using_the_reporting_Tag_VS_build_Tag
+        -->
+        <artifactId>maven-checkstyle-plugin</artifactId>
+        <configuration>
+          <violationSeverity>warning</violationSeverity>
+        </configuration>
+        <!-- TODO add "check" goal with bypass option, e.g. -Dverify=false -->
+        <dependencies>
+          <dependency>
+		    <!-- patched with flag to disable javadoc checking on nested types, see JavadocType.ignoreNestedTypes -->
+            <groupId>checkstyle</groupId>
+            <artifactId>checkstyle</artifactId>
+            <version>5.1.1-INTERNAL-1</version>
+          </dependency>
+          <dependency>
+            <groupId>org.jmonitor</groupId>
+            <artifactId>jmonitor-build-tools</artifactId>
+            <version>${project.version}</version>
+          </dependency>
+        </dependencies>
+      </plugin>
+      <plugin>
+        <!-- this is needed to add a dependency to the corresponding reporting plugin -->
+        <artifactId>maven-pmd-plugin</artifactId>
+        <!-- TODO add "check" goal with bypass option, e.g. -Dverify=false -->
+        <dependencies>
+          <dependency>
+            <groupId>org.jmonitor</groupId>
+            <artifactId>jmonitor-build-tools</artifactId>
+            <version>${project.version}</version>
+          </dependency>
+        </dependencies>
+      </plugin>
+      <plugin>
+        <!-- this is needed to add a dependency to the corresponding reporting plugin -->
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>findbugs-maven-plugin</artifactId>
+        <!-- TODO add "check" goal with bypass option, e.g. -Dverify=false -->
+        <dependencies>
+          <dependency>
+            <groupId>org.jmonitor</groupId>
+            <artifactId>jmonitor-build-tools</artifactId>
+            <version>${project.version}</version>
+          </dependency>
+        </dependencies>
+      </plugin>
+      <plugin>
+        <groupId>com.mycila.maven-license-plugin</groupId>
+        <artifactId>maven-license-plugin</artifactId>
+        <version>1.6.1</version>
+        <configuration>
+          <header>LICENSE_HEADER</header>
+          <failIfMissing>true</failIfMissing>
+          <includes>
+            <include>**/*.java</include>
+            <include>pom.xml</include>
+            <include>src/main/resources/*.properties</include>
+            <include>src/test/resources/*.properties</include>
+          </includes>
+          <useDefaultExcludes>false</useDefaultExcludes>
+          <excludes>
+            <exclude>**/target/**</exclude>
+          </excludes>
+        </configuration>
+        <executions>
+          <execution>
+            <goals>
+              <goal>check</goal>
+            </goals>
+          </execution>
+        </executions>
+        <dependencies>
+          <dependency>
+            <groupId>org.jmonitor</groupId>
+            <artifactId>jmonitor-build-tools</artifactId>
+            <version>${project.version}</version>
+          </dependency>
+        </dependencies>
+      </plugin>
+    </plugins>
+  </build>
+
+  <reporting>
+    <plugins>
+      <plugin>
+        <artifactId>maven-project-info-reports-plugin</artifactId>
+        <version>2.3</version>
+      </plugin>
+      <plugin>
+        <artifactId>maven-jxr-plugin</artifactId>
+        <version>2.1</version>
+      </plugin>
+      <plugin>
+        <artifactId>maven-surefire-report-plugin</artifactId>
+        <version>2.5</version>
+      </plugin>
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>cobertura-maven-plugin</artifactId>
+        <version>2.4</version>
+      </plugin>
+      <plugin>
+        <artifactId>maven-javadoc-plugin</artifactId>
+        <version>2.7</version>
+        <!-- TODO the aggregate report is causing issues so the report set below is explicitly created to exclude it -->
+        <reportSets>
+          <reportSet>
+            <reports>
+              <report>javadoc</report>
+            </reports>
+          </reportSet>
+        </reportSets>
+      </plugin>
+      <plugin>
+        <artifactId>maven-checkstyle-plugin</artifactId>
+        <version>2.5</version>
+        <configuration>
+          <configLocation>jmonitor-checkstyle.xml</configLocation>
+          <headerLocation>jmonitor-checkstyle-header.txt</headerLocation>
+		  <suppressionsLocation>jmonitor-checkstyle-suppressions.xml</suppressionsLocation>
+        </configuration>
+      </plugin>
+      <plugin>
+        <artifactId>maven-pmd-plugin</artifactId>
+        <version>2.4</version>
+        <configuration>
+          <linkXref>true</linkXref>
+          <targetJdk>1.5</targetJdk>
+          <rulesets>
+            <ruleset>jmonitor-pmd.xml</ruleset>
+          </rulesets>
+        </configuration>
+      </plugin>
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>findbugs-maven-plugin</artifactId>
+        <version>2.3.2-INTERNAL-1</version>
+        <configuration>
+          <threshold>Low</threshold>
+          <effort>Max</effort>
+          <excludeFilterFile>jmonitor-findbugs-exclude.xml</excludeFilterFile>
+          <includeTests>true</includeTests>
+        </configuration>
+      </plugin>
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>javancss-maven-plugin</artifactId>
+        <version>2.0</version>
+      </plugin>
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>jdepend-maven-plugin</artifactId>
+        <version>2.0-beta-2</version>
+      </plugin>
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>versions-maven-plugin</artifactId>
+        <version>1.1</version>
+      </plugin>
+      <plugin>
+        <!--
+          since pom inheritance is being used, the report execution is not ordered correctly (see
+          http://jira.codehaus.org/browse/MSITE-402), and the taglist report ends up being run before the jxr report (at
+          least for me), and the taglist report generates the following error: "[ERROR] Taglist plugin MUST be executed
+          after the JXR plugin. No links to xref were generated.". TODO build and submit patch for taglist-maven-plugin
+          that allows it to generate links even if it is run before the jxr plugin (similar to how other plugins behave)
+        -->
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>taglist-maven-plugin</artifactId>
+        <version>2.4</version>
+      </plugin>
+    </plugins>
+  </reporting>
+
+  <profiles>
+    <profile>
+      <!--
+        this profile uses the official release of aspectjtools which weaves probes about 5x slower than the patched
+        build that is used by default
+      -->
+      <id>use-unpatched-aspectjtools</id>
+      <properties>
+        <aspectjtools.version>1.6.10</aspectjtools.version>
+      </properties>
+    </profile>
+    <profile>
+      <id>release</id>
+      <build>
+        <plugins>
+          <plugin>
+            <artifactId>maven-javadoc-plugin</artifactId>
+            <executions>
+              <execution>
+                <id>attach-javadocs</id>
+                <goals>
+                  <goal>jar</goal>
+                </goals>
+              </execution>
+            </executions>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+    <profile>
+      <id>format-license-headers</id>
+      <build>
+        <plugins>
+          <plugin>
+            <!--
+              this is in additional to the check goal for the same plugin defined in the build section,
+              so it is merged into that definition when this profile is active
+            -->
+            <groupId>com.mycila.maven-license-plugin</groupId>
+            <artifactId>maven-license-plugin</artifactId>
+            <executions>
+              <execution>
+                <!-- need id to distinguish from check goal defined in the build section -->
+                <id>format</id>
+                <phase>compile</phase>
+                <goals>
+                  <goal>format</goal>
+                </goals>
+                <configuration>
+                  <!-- this is in addition to configuration specified as part of check goal in the build section -->
+                  <headerDefinitions>
+                    <headerDefinition>jmonitor-license-header-xml-style.xml</headerDefinition>
+                  </headerDefinitions>
+                </configuration>
+              </execution>
+            </executions>
+            <dependencies>
+              <dependency>
+                <groupId>org.jmonitor</groupId>
+                <artifactId>jmonitor-build-tools</artifactId>
+                <version>${project.version}</version>
+              </dependency>
+            </dependencies>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+  </profiles>
+</project>

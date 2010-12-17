@@ -1,0 +1,17 @@
+Index: modules/util/src/org/aspectj/util/FileUtil.java
+===================================================================
+RCS file: /cvsroot/tools/org.aspectj/modules/util/src/org/aspectj/util/FileUtil.java,v
+retrieving revision 1.30
+diff -r1.30 FileUtil.java
+99c99,107
+< 			return (null != file) && new ZipFile(file) != null;
+---
+> 			if (file == null) {
+> 				return false;
+> 			}
+> 			ZipFile zipFile = new ZipFile(file);
+> 			if (zipFile == null) {
+> 				return false;
+> 			}
+> 			zipFile.close();
+> 			return true;

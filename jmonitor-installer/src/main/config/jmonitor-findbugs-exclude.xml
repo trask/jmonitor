@@ -1,0 +1,24 @@
+<FindBugsFilter>
+  <Match>
+    <!-- System.exit() is only used when runMain() is called from main() -->
+    <Class name="org.jmonitor.installer.InstallerMain" />
+    <Method name="runMain" />
+    <Bug pattern="DM_EXIT" />
+  </Match>
+  <Match>
+    <!--
+      explicit GC is used as a last ditch effort to delete a file in case there is an unreferenced
+      open stream preventing the file from being deleted
+    -->
+    <Class name="org.jmonitor.installer.util.   TempDirectoryUtils" />
+    <Method name="deleteDirectory" />
+    <Bug pattern="DM_GC" />
+  </Match>
+  <Match>
+    <!--
+      these are the standard exclusions, for more details see
+      jmonitor-build-tools/src/main/resources/jmonitor-findbugs-exclude.xml
+    -->
+    <Bug pattern="UWF_FIELD_NOT_INITIALIZED_IN_CONSTRUCTOR,SIC_INNER_SHOULD_BE_STATIC_ANON" />
+  </Match>
+</FindBugsFilter>

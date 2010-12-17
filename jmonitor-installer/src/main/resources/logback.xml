@@ -1,0 +1,41 @@
+<configuration>
+
+  <!--
+    TODO don't log to file by default, make that command line option (no need to clutter up disk
+    unless user needs to debug issue)
+  -->
+
+  <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+    <encoder>
+      <pattern>%-5level - %msg%n</pattern>
+    </encoder>
+  </appender>
+
+  <appender name="FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+    <file>jmonitor-installer.log</file>
+    <rollingPolicy class="ch.qos.logback.core.rolling.FixedWindowRollingPolicy">
+      <fileNamePattern>jmonitor-installer.%i.log.zip</fileNamePattern>
+      <minIndex>1</minIndex>
+      <maxIndex>3</maxIndex>
+    </rollingPolicy>
+    <triggeringPolicy class="ch.qos.logback.core.rolling.SizeBasedTriggeringPolicy">
+      <maxFileSize>5MB</maxFileSize>
+    </triggeringPolicy>
+    <encoder>
+      <pattern>%d %-5level - %msg%n</pattern>
+    </encoder>
+  </appender>
+
+  <logger name="org.jmonitor" level="INFO">
+    <appender-ref ref="STDOUT" />
+  </logger>
+
+  <!--
+    TODO make level configurable for capturing ajc WEAVEINFO messages which are logged at TRACE
+    level see Weaver.MessageLogger.handleMessage()
+  -->
+  <logger name="org.jmonitor" level="DEBUG">
+    <appender-ref ref="FILE" />
+  </logger>
+
+</configuration>

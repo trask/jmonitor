@@ -1,0 +1,14 @@
+<FindBugsFilter>
+  <Match>
+    <!-- the mock servlets are full of things that regular servlets shouldn't do -->
+    <Class name="~org\.jmonitor\.mock\.MockServlet.*" />
+    <Bug pattern="SE_BAD_FIELD,MSF_MUTABLE_SERVLET_FIELD,MTIA_SUSPECT_SERVLET_INSTANCE_FIELD" />
+  </Match>
+  <Match>
+    <!--
+      these are the standard exclusions, for more details see
+      jmonitor-build-tools/src/main/resources/jmonitor-findbugs-exclude.xml
+    -->
+    <Bug pattern="UWF_FIELD_NOT_INITIALIZED_IN_CONSTRUCTOR,SIC_INNER_SHOULD_BE_STATIC_ANON" />
+  </Match>
+</FindBugsFilter>

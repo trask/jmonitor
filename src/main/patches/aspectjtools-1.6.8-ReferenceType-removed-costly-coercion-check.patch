@@ -1,0 +1,27 @@
+Index: modules/org.aspectj.matcher/src/org/aspectj/weaver/ReferenceType.java
+===================================================================
+RCS file: /cvsroot/tools/org.aspectj/modules/org.aspectj.matcher/src/org/aspectj/weaver/ReferenceType.java,v
+retrieving revision 1.21
+diff -r1.21 ReferenceType.java
+326,335c326,335
+< 		ResolvedMember[] a = getDeclaredMethods();
+< 		ResolvedMember[] b = other.getDeclaredMethods(); // ??? is this cast
+< 		// always safe
+< 		for (int ai = 0, alen = a.length; ai < alen; ai++) {
+< 			for (int bi = 0, blen = b.length; bi < blen; bi++) {
+< 				if (!b[bi].isCompatibleWith(a[ai])) {
+< 					return false;
+< 				}
+< 			}
+< 		}
+---
+> //		ResolvedMember[] a = getDeclaredMethods();
+> //		ResolvedMember[] b = other.getDeclaredMethods(); // ??? is this cast
+> //		// always safe
+> //		for (int ai = 0, alen = a.length; ai < alen; ai++) {
+> //			for (int bi = 0, blen = b.length; bi < blen; bi++) {
+> //				if (!b[bi].isCompatibleWith(a[ai])) {
+> //					return false;
+> //				}
+> //			}
+> //		}

@@ -1,0 +1,11 @@
+Index: modules/org.aspectj.matcher/src/org/aspectj/weaver/patterns/PointcutEvaluationExpenseComparator.java
+===================================================================
+RCS file: /cvsroot/tools/org.aspectj/modules/org.aspectj.matcher/src/org/aspectj/weaver/patterns/PointcutEvaluationExpenseComparator.java,v
+retrieving revision 1.3
+diff -r1.3 PointcutEvaluationExpenseComparator.java
+28,29c28,29
+< 	private static final int THIS_OR_TARGET = 10;
+< 	private static final int CALL = 11;
+---
+> 	private static final int THIS_OR_TARGET = 11;
+> 	private static final int CALL = 10;

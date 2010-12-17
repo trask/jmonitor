@@ -1,0 +1,43 @@
+Eclipse code formatter
+* Import src/main/config/jmonitor-eclipse-code-style.xml
+
+Eclipse xml formatter
+* Line width: 100
+* Indent using spaces
+* Indentation size: 2
+
+Install Google Plugin for Eclipse (for GWT support)
+* If you have issues with plugin falsely highlighting @UiField elements
+  * Right-click on jmonitor-runtime > AspectJ Tools > Remove AspectJ Capability
+  * Right-click on jmonitor-runtime > Google > Web Toolkit Settings... > Uncheck "Use Google Web Toolkit" > OK
+  * Right-click on jmonitor-runtime > Google > Web Toolkit Settings... > Check "Use Google Web Toolkit" > OK
+  * Right-click on jmonitor-runtime > Configure > Convert to AspectJ Project
+  * this seems to be an issue with the file <workspace>/.metadata/.plugins/com.google.gwt.eclipse.core
+    it's not populating <uiField> tags under <uiXmlReferencedField> when project is also using AJDT
+
+Eclipse Checkstyle plugin
+* Import jmonitor-build-tools/src/main/resources/jmonitor-checkstyle.xml
+
+Eclipse PMD plugin
+* Import jmonitor-build-tools/src/main/resources/jmonitor-pmd.xml
+** Clear All
+** Import by Copy
+
+Eclipse FindBugs plugin
+* Uncheck reporter > Dodgy 
+
+Structure101 Eclipse plugin?
+
+
+
+ASM bug:
+[ #314481 ] Bug in Remapper related to annotations
+
+svn checkout svn://svn.forge.objectweb.org/svnroot/asm/tags/ASM_3_2 ASM_3_2
+apply patch for bug
+apply patch for asm-commons-3.2.pom (NEED TO MAKE THIS PATCH)
+mvn install:install-file -DgroupId=asm -DartifactId=asm-commons -Dversion=3.2.1-INTERNAL-rtag3.2-p314481 -Dpackaging=jar -Dfile=output/dist/lib/asm-commons-3.2.jar -DpomFile=output/dist/lib/asm-commons-3.2.pom
+
+
+Patch maven-shade-plugin 1.3.1
+svn co http://svn.apache.org/repos/asf/maven/plugins/tags/maven-shade-plugin-1.3.1

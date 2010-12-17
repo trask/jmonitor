@@ -1,0 +1,9 @@
+Index: modules/org.aspectj.matcher/src/org/aspectj/weaver/ReferenceType.java
+===================================================================
+RCS file: /cvsroot/tools/org.aspectj/modules/org.aspectj.matcher/src/org/aspectj/weaver/ReferenceType.java,v
+retrieving revision 1.21
+diff -r1.21 ReferenceType.java
+116c116
+< 		this.derivativeTypes.add(dependent);
+---
+> 		//this.derivativeTypes.add(dependent);

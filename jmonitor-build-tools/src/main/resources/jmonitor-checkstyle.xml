@@ -1,0 +1,231 @@
+<?xml version="1.0"?>
+<!DOCTYPE module PUBLIC
+  "-//Puppy Crawl//DTD Check Configuration 1.2//EN"
+  "http://www.puppycrawl.com/dtds/configuration_1_2.dtd">
+
+<!--
+  Based on sun_checks.xml from maven-checkstyle-plugin, with the following changes:
+
+  * added severity property
+  * commented out JavadocPackage
+  * uncommented RegexpHeader, added headerFile and multiLines properties
+  * commented out TreeWalker cacheFile property (gave errors when importing into Eclipse)
+  * commented out JavadocMethod
+  * modified JavadocType scope property
+  * commented out JavadocVariable
+  * commented out JavadocStyle
+  * commented out UnusedImports (see comment below)
+  * commented out EmptyBlock
+  * commented out AvoidInlineConditionals
+  * commented out RedundantThrows
+  * commented out DesignForExtension
+  * commented out FinalParameters
+  * modified RegexpSingleline format property (see comment below)
+  * modified LineLength max property (see comment below)
+  * modified HiddenField, added tokens property
+  * added DeclarationOrder
+  * added StrictDuplicateCode
+  * added custom RegexpMultiline (see comment below)
+  * added FileContentsHolder/SuppressWithNearbyCommentFilter pair to enable suppression via comments
+-->
+
+<module name="Checker">
+
+  <property name="severity" value="warning"/>
+
+  <!-- Checks that each Java package has a Javadoc file used for commenting. -->
+  <!-- See http://checkstyle.sf.net/config_javadoc.html#JavadocPackage -->
+  <!--module name="JavadocPackage">
+    <property name="allowLegacy" value="true"/>
+  </module-->
+
+  <!-- Checks whether files end with a new line. -->
+  <!-- See http://checkstyle.sf.net/config_misc.html#NewlineAtEndOfFile -->
+  <module name="NewlineAtEndOfFile"/>
+
+  <!-- Checks that property files contain the same keys. -->
+  <!-- See http://checkstyle.sf.net/config_misc.html#Translation -->
+  <module name="Translation"/>
+
+  <module name="FileLength"/>
+
+  <!-- Following interprets the header file as regular expressions. -->
+  <module name="RegexpHeader">
+    <property name="headerFile" value="${checkstyle.header.file}"/>
+    <property name="multiLines" value="1"/>
+    <property name="fileExtensions" value="java,xml"/>
+  </module>
+
+  <module name="FileTabCharacter">
+    <property name="eachLine" value="true"/>
+  </module>
+
+  <module name="RegexpSingleline">
+    <!-- \s matches whitespace character, $ matches end of line. -->
+    <!--
+       negative lookbehind "(?<! \*|//)" prevents this from matching ' * ' and '// '
+       because Eclipse adds the extra space at the end of empty javadoc lines
+       and empty line comments (to make them ready for typing a comment)
+    -->
+    <property name="format" value="(?&lt;! \*|//)\s$"/>
+    <property name="message" value="Line has trailing spaces."/>
+  </module>
+
+  <module name="TreeWalker">
+
+    <!--property name="cacheFile" value="${checkstyle.cache.file}"/-->
+
+    <!-- Checks for Javadoc comments. -->
+    <!-- See http://checkstyle.sf.net/config_javadoc.html -->
+    <!--module name="JavadocMethod"/-->
+    <module name="JavadocType">
+      <property name="scope" value="package"/>
+      <!-- this is needed to allow maven mojo tags, e.g. @goal, @phase -->
+      <property name="allowUnknownTags" value="true"/>
+      <!-- require author tag -->
+      <property name="authorFormat" value="^[A-Za-z ]+$"/>
+      <!-- patched in checkstyle 5.1.1-INTERNAL-1 -->
+      <property name="ignoreNestedTypes" value="true"/>
+    </module>
+    <!--module name="JavadocVariable"/-->
+    <!--module name="JavadocStyle"/-->
+
+    <!-- Checks for Naming Conventions. -->
+    <!-- See http://checkstyle.sf.net/config_naming.html -->
+    <module name="ConstantName"/>
+    <module name="LocalFinalVariableName"/>
+    <module name="LocalVariableName"/>
+    <module name="MemberName"/>
+    <module name="MethodName"/>
+    <module name="PackageName"/>
+    <module name="ParameterName"/>
+    <module name="StaticVariableName"/>
+    <module name="TypeName"/>
+
+    <!-- Checks for Headers -->
+    <!-- See http://checkstyle.sf.net/config_header.html -->
+    <!-- <module name="Header"> -->
+      <!-- The follow property value demonstrates the ability -->
+      <!-- to have access to ANT properties. In this case it uses -->
+      <!-- the ${basedir} property to allow Checkstyle to be run -->
+      <!-- from any directory within a project. See property -->
+      <!-- expansion, -->
+      <!-- http://checkstyle.sf.net/config.html#properties -->
+      <!-- <property -->
+      <!--   name="headerFile" -->
+      <!--   value="${basedir}/java.header"/> -->
+    <!-- </module> -->
+
+    <!-- Checks for imports -->
+    <!-- See http://checkstyle.sf.net/config_import.html -->
+    <module name="AvoidStarImport"/>
+    <module name="IllegalImport"/> <!-- defaults to sun.* packages -->
+    <module name="RedundantImport"/>
+    <!--
+       excluded because of false positives,
+       see http://sourceforge.net/tracker/index.php?func=detail&aid=652303&group_id=29721&atid=397078
+    -->
+    <!--module name="UnusedImports"/-->
+
+    <!-- Checks for Size Violations. -->
+    <!-- See http://checkstyle.sf.net/config_sizes.html -->
+    <module name="LineLength">
+      <!--
+        Eclipse should be configured with max line width 100, but it allows
+        lines to exceed that where they are difficult to break cleanly.
+        This value here (120) serves as an upper limit to enforce.
+      -->
+      <property name="max" value="120"/>
+    </module>
+    <module name="MethodLength"/>
+    <module name="ParameterNumber"/>
+
+    <!-- Checks for whitespace -->
+    <!-- See http://checkstyle.sf.net/config_whitespace.html -->
+    <module name="EmptyForIteratorPad"/>
+    <module name="MethodParamPad"/>
+    <module name="NoWhitespaceAfter"/>
+    <module name="NoWhitespaceBefore"/>
+    <module name="OperatorWrap"/>
+    <module name="ParenPad"/>
+    <module name="TypecastParenPad"/>
+    <module name="WhitespaceAfter"/>
+    <module name="WhitespaceAround"/>
+
+    <!-- Modifier Checks -->
+    <!-- See http://checkstyle.sf.net/config_modifiers.html -->
+    <module name="ModifierOrder"/>
+    <module name="RedundantModifier"/>
+
+    <!-- Checks for blocks. You know, those {}'s -->
+    <!-- See http://checkstyle.sf.net/config_blocks.html -->
+    <module name="AvoidNestedBlocks"/>
+    <!--module name="EmptyBlock"/-->
+    <module name="LeftCurly"/>
+    <module name="NeedBraces"/>
+    <module name="RightCurly"/>
+
+    <!-- Checks for common coding problems -->
+    <!-- See http://checkstyle.sf.net/config_coding.html -->
+    <!--module name="AvoidInlineConditionals"/-->
+    <module name="DoubleCheckedLocking"/>
+    <module name="EmptyStatement"/>
+    <module name="EqualsHashCode"/>
+    <module name="HiddenField">
+      <property name="tokens" value="VARIABLE_DEF"/>
+    </module>
+    <module name="IllegalInstantiation"/>
+    <module name="InnerAssignment"/>
+    <module name="MagicNumber"/>
+    <module name="MissingSwitchDefault"/>
+    <!--module name="RedundantThrows"/-->
+    <module name="SimplifyBooleanExpression"/>
+    <module name="SimplifyBooleanReturn"/>
+
+    <!-- Checks for class design -->
+    <!-- See http://checkstyle.sf.net/config_design.html -->
+    <!--module name="DesignForExtension"/-->
+    <module name="FinalClass"/>
+    <module name="HideUtilityClassConstructor"/>
+    <module name="InterfaceIsType"/>
+    <module name="VisibilityModifier"/>
+
+    <!-- Miscellaneous other checks. -->
+    <!-- See http://checkstyle.sf.net/config_misc.html -->
+    <module name="ArrayTypeStyle"/>
+    <!--module name="FinalParameters"/-->
+    <module name="TodoComment"/>
+    <module name="UpperEll"/>
+
+    <!--
+      NOTE: preference would be to further enforce this order
+           (gwt project has a custom checkstyle plugin to do something similar)
+            - instance methods
+            - static methods
+            - nested classes / enums / interfaces (any order)
+    -->
+    <module name="DeclarationOrder"/>
+
+    <!-- this is needed for the SuppressWithNearbyCommentFilter below -->
+    <module name="FileContentsHolder"/> 
+
+  </module>
+
+  <module name="SuppressWithNearbyCommentFilter"/>
+
+  <module name="StrictDuplicateCode">
+    <property name="severity" value="ignore"/>
+    <metadata name="net.sf.eclipsecs.core.lastEnabledSeverity" value="inherit"/>
+  </module>
+
+  <!-- Checks that there are no empty lines before closing braces -->
+  <module name="RegexpMultiline">
+    <!--
+      NOTE: this regular expression "(?<=^\s+)^[ \t]*[}] *\n"
+            puts the warning message on the correct line but it runs much slower
+    -->
+    <property name="format" value="[\r]?[\n][ \t]*[\r]?[\n][ \t]*[}][ ]*[\n]"/>
+    <property name="message" value="newline before }"/>
+  </module>
+
+</module>

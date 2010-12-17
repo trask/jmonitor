@@ -1,0 +1,15 @@
+<FindBugsFilter>
+  <Match>
+    <!-- ignoring the return values of Queue.poll() is valid in this case -->
+    <Class name="org.jmonitor.agent.impl.util.collection.FlushableHelperList" />
+    <Method name="add" />
+    <Bug pattern="RV_RETURN_VALUE_IGNORED" />
+  </Match>
+  <Match>
+    <!--
+      these are the standard exclusions, for more details see
+      jmonitor-build-tools/src/main/resources/jmonitor-findbugs-exclude.xml
+    -->
+    <Bug pattern="UWF_FIELD_NOT_INITIALIZED_IN_CONSTRUCTOR,SIC_INNER_SHOULD_BE_STATIC_ANON" />
+  </Match>
+</FindBugsFilter>

@@ -1,0 +1,33 @@
+Index: pom.xml
+===================================================================
+--- pom.xml	(revision 919524)
++++ pom.xml	(working copy)
+@@ -28,8 +28,9 @@
+      <version>16</version>
+   </parent>
+ 
++  <groupId>org.apache.maven.plugins</groupId>
+   <artifactId>maven-shade-plugin</artifactId>
+-  <version>1.3.1</version>
++  <version>1.3.2-INTERNAL-rtag1.3.1</version>
+   <packaging>maven-plugin</packaging>
+ 
+   <name>Maven Shade Plugin</name>
+Index: src/main/java/org/apache/maven/plugins/shade/relocation/SimpleRelocator.java
+===================================================================
+--- src/main/java/org/apache/maven/plugins/shade/relocation/SimpleRelocator.java	(revision 919524)
++++ src/main/java/org/apache/maven/plugins/shade/relocation/SimpleRelocator.java	(working copy)
+@@ -108,11 +108,11 @@
+ 
+     public String relocatePath( String path )
+     {
+-        return path.replaceFirst( pathPattern, shadedPathPattern );
++        return shadedPathPattern + path.substring( pathPattern.length() );
+     }
+ 
+     public String relocateClass( String clazz )
+     {
+-        return clazz.replaceFirst( pattern, shadedPattern );
++        return shadedPattern + clazz.substring( pattern.length() );
+     }
+ }

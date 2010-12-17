@@ -1,0 +1,5 @@
+
+Javadoc tag ordering: http://java.sun.com/j2se/javadoc/writingdoccomments/#orderoftags
+
+Class level javadocs only (use line comments to doc methods),
+except for classes in jmonitor-api which should include method level javadocs also

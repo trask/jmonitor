@@ -1,0 +1,13 @@
+Index: modules/org.aspectj.matcher/src/org/aspectj/weaver/World.java
+===================================================================
+RCS file: /cvsroot/tools/org.aspectj/modules/org.aspectj.matcher/src/org/aspectj/weaver/World.java,v
+retrieving revision 1.27
+diff -r1.27 World.java
+1391,1393c1391,1393
+< 				s = p.getProperty(xsetTYPE_DEMOTION, "true"); // default is ON
+< 				if (s.equalsIgnoreCase("false")) {
+< 					typeMap.demotionSystemActive = false;
+---
+> 				s = p.getProperty(xsetTYPE_DEMOTION, "false"); // default is OFF
+> 				if (s.equalsIgnoreCase("true")) {
+> 					typeMap.demotionSystemActive = true;
