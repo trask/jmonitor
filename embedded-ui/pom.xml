@@ -1,0 +1,366 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!--
+  Copyright 2010 the original author or authors.
+
+  Licensed under the Apache License, Version 2.0 (the "License");
+  you may not use this file except in compliance with the License.
+  You may obtain a copy of the License at
+
+       http://www.apache.org/licenses/LICENSE-2.0
+
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License.
+-->
+
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+
+  <parent>
+    <groupId>org.jmonitor</groupId>
+    <artifactId>jmonitor-parent</artifactId>
+    <version>1.0-SNAPSHOT</version>
+  </parent>
+
+  <artifactId>jmonitor-embedded-ui</artifactId>
+
+  <name>JMonitor Embedded UI</name>
+  <description>Runtime component of JMonitor which is woven into ear and war files by the installer</description>
+
+  <properties>
+    <gwt.version>2.0.3</gwt.version>
+  </properties>
+
+  <dependencies>
+    <dependency>
+      <groupId>org.jmonitor</groupId>
+      <artifactId>jmonitor-api</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.jmonitor</groupId>
+      <artifactId>jmonitor-util</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.jmonitor</groupId>
+      <artifactId>jmonitor-agent</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>ch.qos.logback</groupId>
+      <artifactId>logback-core</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>ch.qos.logback</groupId>
+      <artifactId>logback-classic</artifactId>
+    </dependency>
+    <dependency>
+      <!-- used for concurrent weak hash map -->
+      <groupId>com.google.guava</groupId>
+      <artifactId>guava</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>com.google.gwt</groupId>
+      <artifactId>gwt-servlet</artifactId>
+      <version>${gwt.version}</version>
+    </dependency>
+    <dependency>
+      <!--
+        this dependency is required by jasypt runtime on JDK 1.4 and JDK 5
+        (see http://www.jasypt.org/dependencies.html)
+        
+        the full icu4j package is 4.9mb, so we have built our own reduced
+        icu4j package containing only the normalizer module
+        (see http://userguide.icu-project.org/packaging-icu4j)
+        which reduces it down to 1.0mb
+      -->
+      <groupId>org.jmonitor.thirdparty.icu</groupId>
+      <artifactId>icu4j</artifactId>
+      <classifier>lite</classifier>
+      <version>4.6-SNAPSHOT</version>
+    </dependency>
+    <dependency>
+      <!--
+        cannot use commons-beanutil-core because commons-configuration includes commons-digester
+        which includes commons-beanutils and so we need to use the same here otherwise we end up
+        with both (not sure if commons-digester requires commons-beanutils or if it could get away
+        with just commons-beanutils-core)
+      -->
+      <groupId>commons-beanutils</groupId>
+      <artifactId>commons-beanutils</artifactId>
+      <version>1.8.3</version>
+    </dependency>
+    <dependency>
+      <!-- used for base64 encoding / decoding -->
+      <groupId>commons-codec</groupId>
+      <artifactId>commons-codec</artifactId>
+      <version>1.4</version>
+    </dependency>
+    <dependency>
+      <groupId>commons-configuration</groupId>
+      <artifactId>commons-configuration</artifactId>
+      <version>1.6</version>
+      <exclusions>
+        <exclusion>
+          <!--
+            cannot use commons-beanutil-core because commons-configuration includes commons-digester
+            which includes commons-beanutils and so we need to use the same here otherwise we end up
+            with both (not sure if commons-digester requires commons-beanutils or if it could get
+            away with just commons-beanutils-core)
+          -->
+          <groupId>commons-beanutils</groupId>
+          <artifactId>commons-beanutils-core</artifactId>
+        </exclusion>
+      </exclusions>
+    </dependency>
+    <dependency>
+      <groupId>commons-io</groupId>
+      <artifactId>commons-io</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>commons-lang</groupId>
+      <artifactId>commons-lang</artifactId>
+    </dependency>
+    <dependency>
+      <!-- used for email alerts -->
+      <groupId>org.apache.commons</groupId>
+      <artifactId>commons-email</artifactId>
+      <version>1.2</version>
+      <exclusions>
+        <!--
+          without excluding these, they will be transitively inherited even though the scope is
+          overridden and set to provided below (TODO is this correct or a maven bug?)
+        -->
+        <exclusion>
+          <groupId>javax.mail</groupId>
+          <artifactId>mail</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>javax.activation</groupId>
+          <artifactId>activation</artifactId>
+        </exclusion>
+      </exclusions>
+    </dependency>
+    <dependency>
+      <groupId>org.jasypt</groupId>
+      <artifactId>jasypt</artifactId>
+      <classifier>lite</classifier>
+      <version>1.7</version>
+    </dependency>
+    <dependency>
+      <groupId>org.slf4j</groupId>
+      <artifactId>slf4j-api</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>com.google.gwt</groupId>
+      <artifactId>gwt-user</artifactId>
+      <version>${gwt.version}</version>
+      <!-- only needed for gwt compilation -->
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>com.pietschy.gwt</groupId>
+      <artifactId>gwt-pectin</artifactId>
+      <version>0.8</version>
+      <!-- only needed for gwt compilation -->
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <!--
+        this dependency is only included to override the scope of the transitive dependency from
+        commons-email. it is marked provided because it should be provided by the application server
+      -->
+      <groupId>javax.mail</groupId>
+      <artifactId>mail</artifactId>
+      <version>1.4.1</version>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <!--
+        this dependency is only included to override the scope of the transitive dependency from
+        commons-email. it is marked provided because it should be provided by the application server
+      -->
+      <groupId>javax.activation</groupId>
+      <artifactId>activation</artifactId>
+      <version>1.1</version>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.jmonitor.thirdparty.aspectj</groupId>
+      <artifactId>aspectjrt</artifactId>
+      <!-- all classes in aspectj artifact are provided at runtime by aspectjweaver artifact below -->
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <!--
+        aspectjweaver is used for running monitor via load time weaving (which is currently only
+        recommended for debugging purposes)
+      -->
+      <groupId>org.jmonitor.thirdparty.aspectj</groupId>
+      <artifactId>aspectjweaver</artifactId>
+      <version>${aspectj.version}</version>
+      <scope>runtime</scope>
+    </dependency>
+    <dependency>
+      <groupId>junit</groupId>
+      <artifactId>junit</artifactId>
+      <scope>test</scope>
+    </dependency>
+  </dependencies>
+
+  <build>
+    <plugins>
+      <!-- BEGIN PLUGINS RELATED TO GWT BUILD PROCESS -->
+      <plugin>
+        <!-- creates directory for the generated gwt files so it can be added to list of resources below -->
+        <artifactId>maven-antrun-plugin</artifactId>
+        <configuration>
+          <tasks>
+            <mkdir dir="${project.build.directory}/generated/gwt" />
+          </tasks>
+        </configuration>
+        <executions>
+          <execution>
+            <phase>generate-resources</phase>
+            <goals>
+              <goal>run</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
+        <!--
+          adds directory created above as a resource directory which will contain the generated gwt
+          files
+        -->
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>build-helper-maven-plugin</artifactId>
+        <configuration>
+          <resources>
+            <resource>
+              <directory>${project.build.directory}/generated/gwt</directory>
+            </resource>
+          </resources>
+        </configuration>
+        <executions>
+          <execution>
+            <phase>generate-resources</phase>
+            <goals>
+              <goal>add-resource</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>gwt-maven-plugin</artifactId>
+        <version>1.2</version>
+        <executions>
+          <execution>
+            <configuration>
+              <modules>
+                <module>org.jmonitor.ui.Monitor</module>
+              </modules>
+              <webappDirectory>${project.build.directory}/generated/gwt</webappDirectory>
+              <!--
+                "Story Of Your Compile" generates ~25mb of files which is unnecessary for everyday
+                needs
+              -->
+              <soyc>false</soyc>
+            </configuration>
+            <goals>
+              <goal>compile</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
+        <!--
+          run resources:resources a second time to catch the gwt resources generated during the
+          compile phase above
+        -->
+        <artifactId>maven-resources-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>second-time</id>
+            <phase>process-classes</phase>
+            <goals>
+              <goal>resources</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+      <!-- END PLUGINS RELATED TO GWT BUILD PROCESS -->
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>aspectj-maven-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>test-compile</id>
+            <goals>
+              <goal>test-compile</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
+        <artifactId>maven-jar-plugin</artifactId>
+        <executions>
+          <execution>
+            <!--
+              this is bound to the test-compile phase so that the test-jar artifact will be
+              available to the jmonitor-probe project when running "mvn test-compile" from the
+              parent (or the more common "mvn test" from the parent)
+            -->
+            <phase>test-compile</phase>
+            <goals>
+              <goal>test-jar</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
+        <artifactId>maven-shade-plugin</artifactId>
+        <version>1.3.1</version>
+        <executions>
+          <execution>
+            <phase>package</phase>
+            <goals>
+              <goal>shade</goal>
+            </goals>
+            <configuration>
+              <createSourcesJar>true</createSourcesJar>
+              <filters>
+                <filter>
+                  <artifact>commons-beanutils:commons-beanutils</artifact>
+                  <excludes>
+                    <!--
+                      beanutils contains class files copied directly from commons-collections. we
+                      already depend on commons-collections via commons-configuration so we want to
+                      be clear that we are pulling those class files from commons-collections and
+                      not from commons-beanutils. see
+                      https://issues.apache.org/jira/browse/BEANUTILS-278 for more info on this
+                      issue
+                    -->
+                    <exclude>org/apache/commons/collections/**</exclude>
+                  </excludes>
+                </filter>
+              </filters>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
+        <artifactId>maven-surefire-plugin</artifactId>
+        <configuration>
+          <workingDirectory>${project.build.directory}</workingDirectory>
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>
+</project>

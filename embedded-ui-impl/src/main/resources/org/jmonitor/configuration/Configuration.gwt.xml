@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- TODO check if/why rename-to is used -->
+<module rename-to='jmonitor_configuration'>
+
+  <!-- Specify the paths for translatable code -->
+  <source path='service/model' />
+  <source path='shared/model' />
+
+</module>

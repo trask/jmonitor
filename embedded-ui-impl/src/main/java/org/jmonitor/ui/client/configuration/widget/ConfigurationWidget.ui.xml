@@ -1,0 +1,188 @@
+<!DOCTYPE ui:UiBinder SYSTEM "http://dl.google.com/gwt/DTD/xhtml.ent">
+
+<ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder' xmlns:g='urn:import:com.google.gwt.user.client.ui'>
+
+   <g:HTMLPanel>
+
+      <br />
+      &nbsp;
+      <g:Button text="Update" ui:field="updateButton" />
+      <g:Button text="Cancel" ui:field="cancelButton" />
+      <br />
+
+      <table>
+         <tr>
+            <td align="right" style="padding-right:10px">
+               <br />
+               <b>Agent Configuration</b>
+            </td>
+            <td />
+         </tr>
+         <tr>
+            <td align="right" style="padding-right:10px">
+               Enabled
+            </td>
+            <td>
+               <g:CheckBox ui:field="enabledCheckBox" />
+            </td>
+         </tr>
+         <tr>
+            <td align="right" style="padding-right:10px">
+               Threshold (milliseconds)
+            </td>
+            <td>
+               <g:TextBox visibleLength="10" ui:field="thresholdMillisTextBox" />
+            </td>
+         </tr>
+         <tr>
+            <td align="right" style="padding-right:10px">
+               Stuck Threshold (milliseconds)
+            </td>
+            <td>
+               <g:TextBox visibleLength="10" ui:field="stuckThresholdMillisTextBox" />
+            </td>
+         </tr>
+         <tr>
+            <td align="right" style="padding-right:10px">
+               Stack Trace Initial Delay (milliseconds)
+            </td>
+            <td>
+               <g:TextBox visibleLength="10" ui:field="stackTraceInitialDelayMillisTextBox" />
+            </td>
+         </tr>
+         <tr>
+            <td align="right" style="padding-right:10px">
+               Stack Trace Period (milliseconds)
+            </td>
+            <td>
+               <g:TextBox visibleLength="10" ui:field="stackTracePeriodMillisTextBox" />
+            </td>
+         </tr>
+         <tr>
+            <td align="right" style="padding-right:10px">
+               Maximum Trace Events per Request/Operation
+            </td>
+            <td>
+               <g:TextBox visibleLength="10" ui:field="maxTraceEventsPerOperationTextBox" />
+            </td>
+         </tr>
+         <tr>
+            <td align="right" style="padding-right:10px">
+               <br />
+               <b>Logger Configuration</b>
+            </td>
+            <td />
+         </tr>
+         <tr>
+            <td align="right" style="padding-right:10px">
+               Log Archive Filename Pattern
+            </td>
+            <td>
+               <g:TextBox visibleLength="40" ui:field="logArchiveFilenamePatternTextBox" />
+            </td>
+         </tr>
+         <tr>
+            <td align="right" style="padding-right:10px">
+               Log Active Filename
+            </td>
+            <td>
+               <g:TextBox visibleLength="40" ui:field="logActiveFilenameTextBox" />
+            </td>
+         </tr>
+         <tr>
+            <td align="right" style="padding-right:10px">
+               Log Max History
+            </td>
+            <td>
+               <g:TextBox visibleLength="10" ui:field="logMaxHistoryTextBox" />
+            </td>
+         </tr>
+         <!-- COMMENTED OUT UNTIL LOGBACK DEFECT http://jira.qos.ch/browse/LBCORE-152
+              IS FIXED
+         <tr>
+            <td align="right" style="padding-right:10px">
+               Log Max File Size
+            </td>
+            <td>
+               <g:TextBox visibleLength="10" ui:field="logMaxFileSizeTextBox" />
+               (e.g. "100mb")
+            </td>
+         </tr>
+         -->
+         <tr>
+            <td align="right" style="padding-right:10px">
+               Email Host
+            </td>
+            <td>
+               <g:TextBox visibleLength="40" ui:field="emailHostTextBox" />
+            </td>
+         </tr>
+         <tr>
+            <td align="right" style="padding-right:10px">
+               Email Smtp Port
+            </td>
+            <td>
+               <g:TextBox visibleLength="10" ui:field="emailSmtpPortTextBox" />
+            </td>
+         </tr>
+         <tr>
+            <td align="right" style="padding-right:10px">
+               Email Username
+            </td>
+            <td>
+               <g:TextBox visibleLength="40" ui:field="emailUsernameTextBox" />
+            </td>
+         </tr>
+         <tr>
+            <td align="right" style="padding-right:10px">
+               Email Password
+            </td>
+            <td>
+               <g:PasswordTextBox visibleLength="20" ui:field="emailPasswordTextBox" />
+            </td>
+         </tr>
+         <tr>
+            <td align="right" style="padding-right:10px">
+               Email Password (confirm)
+            </td>
+            <td>
+               <g:PasswordTextBox visibleLength="20" ui:field="emailPasswordConfirmationTextBox" />
+            </td>
+         </tr>
+         <tr>
+            <td align="right" style="padding-right:10px">
+               Email SSL
+            </td>
+            <td>
+               <g:CheckBox ui:field="emailSslCheckBox" />
+            </td>
+         </tr>
+         <tr>
+            <td align="right" style="padding-right:10px">
+               Email From Address
+            </td>
+            <td>
+               <g:TextBox visibleLength="40" ui:field="emailFromAddressTextBox" />
+            </td>
+         </tr>
+         <tr>
+            <td align="right" style="padding-right:10px">
+               Email To Addresses (comma-separated)
+            </td>
+            <td>
+               <g:TextBox visibleLength="40" ui:field="emailToAddressesTextBox" />
+            </td>
+         </tr>
+         <tr>
+            <td align="right" style="padding-right:10px">
+               Maximum Trace Events per Email
+            </td>
+            <td>
+               <g:TextBox visibleLength="10" ui:field="maxTraceEventsPerEmail" />
+            </td>
+         </tr>
+      </table>
+
+   </g:HTMLPanel>
+
+</ui:UiBinder>

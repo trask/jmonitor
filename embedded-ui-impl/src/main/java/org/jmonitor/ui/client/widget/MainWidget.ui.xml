@@ -1,0 +1,22 @@
+<!DOCTYPE ui:UiBinder SYSTEM "http://dl.google.com/gwt/DTD/xhtml.ent">
+
+<ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder' xmlns:g='urn:import:com.google.gwt.user.client.ui'>
+
+  <g:HTMLPanel>
+
+    <br />
+    &nbsp;
+    <g:Button text="Refresh" ui:field="refreshButton" />
+    <g:Button text="Update Configuration" ui:field="updateConfigurationButton" />
+    <g:Button text="Change Password" ui:field="changePasswordButton" />
+    <g:Button text="Log Test" ui:field="generateTestLogStatementButton" />
+    <g:Button text="Email Test" ui:field="generateTestEmailButton" />
+
+    <br />
+    <pre>
+      <g:Label ui:field="activityTextLabel" />
+    </pre>
+
+  </g:HTMLPanel>
+
+</ui:UiBinder>

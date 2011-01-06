@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module>
+
+  <!-- Inherit the core Web Toolkit stuff. -->
+  <inherits name='com.google.gwt.user.User' />
+
+  <!-- Inherit the default GWT style sheet -->
+  <inherits name='com.google.gwt.user.theme.standard.Standard' />
+
+  <!-- Other module inherits -->
+  <inherits name='com.pietschy.gwt.pectin.Pectin' />
+  <inherits name='org.jmonitor.configuration.Configuration' />
+
+  <!-- Specify the app entry point class. -->
+  <entry-point class='org.jmonitor.ui.client.UiEntryPoint' />
+
+  <!-- Specify the paths for translatable code -->
+  <source path='client' />
+  <source path='shared' />
+
+</module>
