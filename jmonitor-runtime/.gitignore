@@ -1,0 +1,5 @@
+/jmonitor.log
+/jmonitor.*.log
+/jmonitor.properties
+/spy.log
+/target/

@@ -1,0 +1,310 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  Copyright 2010 Mitratech Holdings, Inc.
+
+  Licensed under the Apache License, Version 2.0 (the "License");
+  you may not use this file except in compliance with the License.
+  You may obtain a copy of the License at
+
+  http://www.apache.org/licenses/LICENSE-2.0
+
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License.
+-->
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+
+  <parent>
+    <groupId>org.jmonitor</groupId>
+    <artifactId>jmonitor-parent</artifactId>
+    <version>1.0-SNAPSHOT</version>
+  </parent>
+
+  <artifactId>jmonitor-installer</artifactId>
+
+  <name>JMonitor Installer</name>
+  <description>The installer which weaves JMonitor into Java EE ear and war files</description>
+
+  <dependencies>
+    <dependency>
+      <!--
+        we need the dependency here so that we can use the dependency plugin's copy-dependencies
+        goal above to copy this into this project's resources directory so it is available at
+        runtime. if it were not part of the same multi-module build (jmonitor) then we could use the
+        dependency plugin's copy goal (instead of copy-dependencies) and we wouldn't need to add
+        this as a dependency (e.g. see how javax:javaee-api is handled below)
+      -->
+      <groupId>org.jmonitor</groupId>
+      <artifactId>jmonitor-runtime</artifactId>
+      <version>${project.version}</version>
+      <!--
+        technically this is not even a provided dependency as this implies that the dependency will
+        be on the installer's classpath at runtime, but really we are just bundling the dependency
+        into the installer as a resource so it can be read via ClassLoader.getResourceAsStream()
+      -->
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.aspectj</groupId>
+      <artifactId>aspectjtools</artifactId>
+      <version>1.6.11</version>
+    </dependency>
+    <dependency>
+      <groupId>commons-io</groupId>
+      <artifactId>commons-io</artifactId>
+      <version>2.1</version>
+    </dependency>
+    <dependency>
+      <groupId>commons-lang</groupId>
+      <artifactId>commons-lang</artifactId>
+      <version>2.6</version>
+    </dependency>
+    <dependency>
+      <groupId>commons-logging</groupId>
+      <artifactId>commons-logging</artifactId>
+      <version>1.1.1</version>
+    </dependency>
+    <dependency>
+      <groupId>log4j</groupId>
+      <artifactId>log4j</artifactId>
+      <version>1.2.16</version>
+    </dependency>
+  </dependencies>
+
+  <pluginRepositories>
+    <pluginRepository>
+      <!--
+        apache snapshot repository is needed for the latest build of maven-shade-plugin
+        which contains the fix for http://jira.codehaus.org/browse/MSHADE-104
+      -->
+      <id>apache.snapshots</id>
+      <name>Apache Snapshot Repository</name>
+      <url>https://repository.apache.org/content/groups/snapshots</url>
+      <releases>
+        <enabled>false</enabled>
+      </releases>
+    </pluginRepository>
+  </pluginRepositories>
+
+  <build>
+    <pluginManagement>
+      <plugins>
+        <plugin>
+          <!--
+            This plugin's configuration is used to store Eclipse m2e settings only.
+            It has no influence on the Maven build itself.
+          -->
+          <groupId>org.eclipse.m2e</groupId>
+          <artifactId>lifecycle-mapping</artifactId>
+          <version>1.0.0</version>
+          <configuration>
+            <lifecycleMappingMetadata>
+              <pluginExecutions>
+                <pluginExecution>
+                  <pluginExecutionFilter>
+                    <groupId>
+                      org.apache.maven.plugins
+                    </groupId>
+                    <artifactId>
+                      maven-dependency-plugin
+                    </artifactId>
+                    <versionRange>[2.4,)</versionRange>
+                    <goals>
+                      <goal>copy</goal>
+                      <goal>copy-dependencies</goal>
+                    </goals>
+                  </pluginExecutionFilter>
+                  <action>
+                    <ignore></ignore>
+                  </action>
+                </pluginExecution>
+                <pluginExecution>
+                  <pluginExecutionFilter>
+                    <groupId>org.codehaus.mojo</groupId>
+                    <artifactId>
+                      build-helper-maven-plugin
+                    </artifactId>
+                    <versionRange>[1.7,)</versionRange>
+                    <goals>
+                      <goal>add-resource</goal>
+                    </goals>
+                  </pluginExecutionFilter>
+                  <action>
+                    <ignore></ignore>
+                  </action>
+                </pluginExecution>
+              </pluginExecutions>
+            </lifecycleMappingMetadata>
+          </configuration>
+        </plugin>
+      </plugins>
+    </pluginManagement>
+    <plugins>
+      <plugin>
+        <artifactId>maven-dependency-plugin</artifactId>
+        <version>2.4</version>
+        <configuration>
+          <!-- common configuration that applies to both executions below -->
+          <outputDirectory>${project.build.directory}/generated/resources</outputDirectory>
+          <!--
+            we strip the version since we need to know the exact jar file names inside InstallerMain
+            in order to read them via ClassLoader.getResourceAsStream()
+          -->
+          <stripVersion>true</stripVersion>
+        </configuration>
+        <executions>
+          <execution>
+            <id>copy-javaee-api</id>
+            <phase>generate-resources</phase>
+            <goals>
+              <goal>copy</goal>
+            </goals>
+            <configuration>
+              <artifactItems>
+                <artifactItem>
+                  <groupId>javax</groupId>
+                  <artifactId>javaee-api</artifactId>
+                  <!--
+                    it's ok to use java ee 6 since it is backwards compatible with applications
+                    compiled against older versions of the spec
+                  -->
+                  <version>6.0</version>
+                </artifactItem>
+              </artifactItems>
+            </configuration>
+          </execution>
+          <execution>
+            <id>copy-jmonitor-runtime</id>
+            <!--
+              NOTE jmonitor-runtime jar artifact is not available until package phase
+              when run from parent without running mvn install first
+            -->
+            <phase>generate-resources</phase>
+            <goals>
+              <goal>copy-dependencies</goal>
+            </goals>
+            <configuration>
+              <includeArtifactIds>jmonitor-runtime</includeArtifactIds>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
+        <!--
+          adds ${project.build.directory}/generated/resources as a
+          resource directory which contains the artifacts copied above
+        -->
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>build-helper-maven-plugin</artifactId>
+        <version>1.7</version>
+        <configuration>
+          <resources>
+            <resource>
+              <directory>${project.build.directory}/generated/resources</directory>
+            </resource>
+          </resources>
+        </configuration>
+        <executions>
+          <execution>
+            <phase>generate-resources</phase>
+            <goals>
+              <goal>add-resource</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
+        <!--
+          this is bound to the package phase to pick up the jmonitor-runtime resource that
+          was added by maven-dependency-plugin:copy-dependencies (above). resources:resources
+          still also runs earlier during the standard maven process-resources phase.
+        -->
+        <artifactId>maven-resources-plugin</artifactId>
+        <version>2.5</version>
+        <executions>
+          <execution>
+            <id>second-time</id>
+            <phase>prepare-package</phase>
+            <goals>
+              <goal>resources</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
+        <!--
+          jar:jar is already bound to the maven package phase by default, but we need to add
+          it explicitly here to make it run after maven-resources-plugin:resources (above).
+          jar:jar still runs earlier in the package phase as well
+          (but doesn't pick up the jmonitor-runtime jar at that point).
+        -->
+        <artifactId>maven-jar-plugin</artifactId>
+        <version>2.3.2</version>
+        <executions>
+          <execution>
+            <id>default-jar</id>
+            <phase>package</phase>
+            <goals>
+              <goal>jar</goal>
+            </goals>
+            <configuration>
+              <!--
+                at least one time this second jar execution fired but didn't jar
+                (maybe because it thought the jar file was up to date?)
+                TODO I'm not sure if this will prevent this from happening,
+                need to review maven-jar-plugin implementation
+              -->
+              <forceCreation>true</forceCreation>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
+        <artifactId>maven-shade-plugin</artifactId>
+        <version>1.6-SNAPSHOT</version>
+        <executions>
+          <execution>
+            <phase>package</phase>
+            <goals>
+              <goal>shade</goal>
+            </goals>
+            <configuration>
+              <createSourcesJar>true</createSourcesJar>
+              <relocations>
+                <!--
+                  shading aspectj has two benefits
+                  * doesn't conflict with other versions
+                  * running shaded ajc doesn't pick up application aspects
+                -->
+                <relocation>
+                  <pattern>org.aspectj</pattern>
+                  <shadedPattern>org.jmonitor.shaded.aspectj</shadedPattern>
+                </relocation>
+                <relocation>
+                  <!--
+                    AspectJ org.aspectj.weaver.bcel.BcelShadow uses the text
+                    "(I)Lorg/aspectj/lang/ProceedingJoinPoint;" which is the
+                    method args concatenated with the return type and so the
+                    maven shade plugin doesn't relocate this
+                  -->
+                  <rawString>true</rawString>
+                  <pattern>\(I\)Lorg/aspectj/lang/ProceedingJoinPoint;</pattern>
+                  <shadedPattern>(I)Lorg/jmonitor/shaded/aspectj/lang/ProceedingJoinPoint;</shadedPattern>
+                </relocation>
+              </relocations>
+              <transformers>
+                <transformer implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
+                  <mainClass>org.jmonitor.installer.InstallerMain</mainClass>
+                </transformer>
+              </transformers>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+    </plugins>
+  </build>
+</project>
